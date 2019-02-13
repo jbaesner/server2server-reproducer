@@ -15,10 +15,14 @@
  */
 package org.wildfly;
 
-import javax.ejb.EJB;
+import java.util.Properties;
+
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,15 +33,34 @@ public class StartupSingletonBean {
 
     private final Logger logger = LoggerFactory.getLogger(StartupSingletonBean.class);
 
-    @EJB(lookup="ejb:server2server/server2server-ejb/SimpleRemoteBean!org.wildfly.SimpleRemote")
-    SimpleRemote bean;
-    
     @Schedule(hour = "*", minute = "*", second = "*/10", persistent = false)
     public void timer() {
-        
-        String destination = System.getProperty("jboss.node.name");
-        String target = bean.logMessageAndReturnJBossNodeName(String.format("called from destination '%s'", destination));
-        
-        logger.info("called SimpleRemote from destination '{}' on target '{}'", destination, target);
+
+        Context ctx = null;
+
+        try {
+            Properties props = new Properties();
+            props.put(Context.INITIAL_CONTEXT_FACTORY, "org.wildfly.naming.client.WildFlyInitialContextFactory");
+            ctx = new InitialContext(props);
+            
+            SimpleRemote bean = (SimpleRemote) ctx.lookup("ejb:server2server/server2server-ejb/SimpleRemoteBean!org.wildfly.SimpleRemote");
+
+            String destination = System.getProperty("jboss.node.name");
+            String target = bean.logMessageAndReturnJBossNodeName(String.format("called from destination '%s'", destination));
+
+            logger.info("called SimpleRemote from destination '{}' on target '{}'", destination, target);
+
+        } catch (NamingException e) {
+            logger.error("Unable to invoke SimpleRemoteBean", e);
+        } finally {
+            if (ctx != null) {
+                try {
+                    ctx.close();
+                } catch (NamingException e) {
+                    logger.trace("Unable to close Context", e);
+                }
+                ctx = null;
+            }
+        }
     }
 }
