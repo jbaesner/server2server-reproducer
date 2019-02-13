@@ -32,6 +32,15 @@ import org.slf4j.LoggerFactory;
 public class StartupSingletonBean {
 
     private final Logger logger = LoggerFactory.getLogger(StartupSingletonBean.class);
+    // app-name/module-name/distinct-name/bean-name!bean-interface
+    private final String EJB_JNDI_NAME_TEMPLATE =  "ejb:server2server/server2server-ejb/%s/SimpleRemoteBean!org.wildfly.SimpleRemote";
+
+    // get some parameters provided by system properties
+    String rocPort = System.getProperty("roc.port", "8080");
+    String distinctName = System.getProperty("remote.distinct.name", "unknown");
+
+    String url= "http-remoting://localhost:" + rocPort;
+    String jndiName = String.format(EJB_JNDI_NAME_TEMPLATE, distinctName);
 
     @Schedule(hour = "*", minute = "*", second = "*/10", persistent = false)
     public void timer() {
@@ -41,9 +50,10 @@ public class StartupSingletonBean {
         try {
             Properties props = new Properties();
             props.put(Context.INITIAL_CONTEXT_FACTORY, "org.wildfly.naming.client.WildFlyInitialContextFactory");
+            props.put(Context.PROVIDER_URL, url);
             ctx = new InitialContext(props);
             
-            SimpleRemote bean = (SimpleRemote) ctx.lookup("ejb:server2server/server2server-ejb/SimpleRemoteBean!org.wildfly.SimpleRemote");
+            SimpleRemote bean = (SimpleRemote) ctx.lookup(jndiName);
 
             String destination = System.getProperty("jboss.node.name");
             String target = bean.logMessageAndReturnJBossNodeName(String.format("called from destination '%s'", destination));

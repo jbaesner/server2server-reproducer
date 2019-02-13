@@ -223,6 +223,7 @@
                 </thread-pool>
             </thread-pools>
             <default-security-domain value="other"/>
+            <default-distinct-name value="${jboss.node.name}"/>
             <default-missing-method-permissions-deny-access value="true"/>
             <log-system-exceptions value="true"/>
         </subsystem>
