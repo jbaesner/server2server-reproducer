@@ -21,5 +21,5 @@
     
 6.) start two nodes
 
-    $JBOSS_HOME/bin/standalone.sh -c standalone-ha.xml -Djboss.node.name=node1 -Djboss.server.base.dir=$JBOSS_HOME/node1 -Droc.port=8380 -Dremote.distinct.name=node2
-    $JBOSS_HOME/bin/standalone.sh -c standalone-ha.xml -Djboss.node.name=node2 -Djboss.server.base.dir=$JBOSS_HOME/node2 -Djboss.socket.binding.port-offset=300 -Droc.port=8080 -Dremote.distinct.name=node1
+    $JBOSS_HOME/bin/standalone.sh -c standalone-ha.xml -Djboss.node.name=node1 -Djboss.server.base.dir=$JBOSS_HOME/node1 -Droc.port=4747 -Dremote.distinct.name=node2
+    $JBOSS_HOME/bin/standalone.sh -c standalone-ha.xml -Djboss.node.name=node2 -Djboss.server.base.dir=$JBOSS_HOME/node2 -Djboss.socket.binding.port-offset=300 -Droc.port=4447 -Dremote.distinct.name=node1
