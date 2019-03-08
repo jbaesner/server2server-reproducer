@@ -13,9 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.wildfly;
+package org.wildfly.application;
 
-public interface SimpleRemote {
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
 
-	public String logMessageAndReturnJBossNodeName(String message); 
+import org.jboss.logging.Logger;
+
+@Stateless
+@Remote(EjbNmsRedundancy.class)
+public class EjbNmsRedundancyBean implements EjbNmsRedundancy {
+
+	private static final Logger logger = Logger.getLogger(EjbNmsRedundancyBean.class); 
+
+	private static final String JBOSS_NODE_NAME = System.getProperty("jboss.node.name");
+	
+    @Override
+    public String ping(String jbossNodeName) {
+        logger.infof("Got pinged from '%s'", jbossNodeName);
+        
+        return JBOSS_NODE_NAME;
+    }
 }

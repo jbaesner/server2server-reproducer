@@ -96,7 +96,7 @@
     <profile>
         <subsystem xmlns="urn:jboss:domain:logging:3.0">
             <console-handler name="CONSOLE">
-                <level name="INFO"/>
+                <level name="TRACE"/>
                 <formatter>
                     <named-formatter name="COLOR-PATTERN"/>
                 </formatter>
@@ -117,6 +117,12 @@
             </logger>
             <logger category="sun.rmi">
                 <level name="WARN"/>
+            </logger>
+            <logger category="org.jboss.ejb.client.invocation">
+                <level name="DEBUG"/>
+            </logger>
+            <logger category="org.wildfly.application">
+                <level name="DEBUG"/>
             </logger>
             <root-logger>
                 <level name="INFO"/>
@@ -227,7 +233,15 @@
             <default-missing-method-permissions-deny-access value="true"/>
             <log-system-exceptions value="true"/>
         </subsystem>
-        <subsystem xmlns="urn:wildfly:elytron:1.2" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
+        <subsystem xmlns="urn:wildfly:elytron:1.2" default-authentication-context="default" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
+            <authentication-client>
+                <authentication-configuration name="ejb-auth" authentication-name="remote-user">
+                    <credential-reference clear-text="remote-password"/>
+                </authentication-configuration>
+                <authentication-context name="default">
+                    <match-rule authentication-configuration="ejb-auth"/>
+                </authentication-context>
+            </authentication-client>        
             <providers>
                 <aggregate-providers name="combined-providers">
                     <providers name="elytron"/>
@@ -559,7 +573,7 @@
             <inet-address value="${jboss.bind.address.management:127.0.0.1}"/>
         </interface>
         <interface name="public">
-            <inet-address value="${jboss.bind.address:127.0.0.1}"/>
+            <inet-address value="${jboss.bind.address:0.0.0.0}"/>
         </interface>
         <interface name="private">
             <inet-address value="${jboss.bind.address.private:127.0.0.1}"/>

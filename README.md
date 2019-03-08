@@ -6,7 +6,9 @@
 
     cp $PROJECT_ROOT/config/standalone-ha.xml $JBOSS_HOME/standalone/configuration
      
-3.) Add a user 'remote-user' with password 'remote-password' to the server ApoplicationRealm
+3.) Add a user 'remote-user' with password 'remote-password' to the server ApplicationRealm
+
+    $JBOSS_HOME/bin/add-user.sh -a -u remote-user -p remote-password
 
 4.) Build the project and copy the deployable:
 

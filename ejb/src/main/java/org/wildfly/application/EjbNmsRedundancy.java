@@ -13,27 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.wildfly;
+package org.wildfly.application;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-@Stateless
-@Remote(SimpleRemote.class)
-public class SimpleRemoteBean implements SimpleRemote {
-
-	Logger logger = LoggerFactory.getLogger(SimpleRemoteBean.class); 
-	
-	public String logMessageAndReturnJBossNodeName(String message) {
-		
-		String jbossNodeName = System.getProperty("jboss.node.name");
-		
-		logger.info(message);
-		
-		return jbossNodeName;
-		
-	}
+public interface EjbNmsRedundancy {
+	public String ping(String jbossNodeName); 
 }
