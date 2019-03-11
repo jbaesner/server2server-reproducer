@@ -1,1 +1,1 @@
-org.wildfly.application.ServiceActivator
+org.wildfly.application.DeploymentServiceActivator

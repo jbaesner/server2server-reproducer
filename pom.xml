@@ -74,6 +74,7 @@
 		<version.ear.plugin>3.0.0</version.ear.plugin>
 		<version.ejb.plugin>3.0.0</version.ejb.plugin>
 		<version.war.plugin>2.1.1</version.war.plugin>
+        <version.jar.plugin>3.1.1</version.jar.plugin>
 		<version.compiler.plugin>3.7.0</version.compiler.plugin>
 
 		<!-- maven-compiler-plugin -->
