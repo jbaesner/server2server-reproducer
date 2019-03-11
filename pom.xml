@@ -85,6 +85,7 @@
 		<module>ejb</module>
 		<module>ear</module>
 		<module>client</module>
+		<module>haservice</module>
 	</modules>
 
 	<dependencyManagement>
