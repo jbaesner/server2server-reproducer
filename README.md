@@ -12,7 +12,8 @@
 
 4.) Build the project and copy the deployable:
 
-    $PROJECT_ROOT/ear/target/server2server.ear $JBOSS_HOME/standalone/deployments
+    $PROJECT_ROOT/ear/target/server2server.ear $JBOSS_HOME/standalone/singleton-deployments
+    $PROJECT_ROOT/haservice/target/server2server-haservice.jar $JBOSS_HOME/standalone/deployments
     
 5.) duplicate the standalone folder twice:
 

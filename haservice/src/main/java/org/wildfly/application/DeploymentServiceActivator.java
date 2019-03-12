@@ -29,7 +29,7 @@ public class DeploymentServiceActivator implements ServiceActivator {
                     .getRequiredService(ServiceName.parse(SingletonDefaultRequirement.SINGLETON_POLICY.getName())).awaitValue();
 
             InjectedValue<Group> group = new InjectedValue<>();
-            Service<Node> service = new SingletonService(group);
+            Service<Node> service = new DeploymentSingletonService(group);
             policy.createSingletonServiceBuilder(SINGLETON_SERVICE_NAME, service)
                     .build(serviceActivatorContext.getServiceTarget())
                     .addDependency(ServiceName.parse("org.wildfly.clustering.default-group"), Group.class, group).install();
