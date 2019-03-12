@@ -242,8 +242,8 @@
         </subsystem>
         <subsystem xmlns="urn:wildfly:elytron:4.0" default-authentication-context="default" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
             <authentication-client>
-                <authentication-configuration name="ejb-auth" authentication-name="remote-user">
-                    <credential-reference clear-text="remote-password"/>
+                <authentication-configuration name="ejb-auth" authentication-name="admin">
+                    <credential-reference clear-text="admin-password"/>
                 </authentication-configuration>
                 <authentication-context name="default">
                     <match-rule authentication-configuration="ejb-auth"/>

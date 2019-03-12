@@ -62,7 +62,7 @@ public class DeploymentSingletonService implements Service<Node> {
         CommandContext ctx;
 
         try {
-            ctx = CommandContextFactory.getInstance().newCommandContext();
+            ctx = CommandContextFactory.getInstance().newCommandContext("admin", new char[] {'a', 'd', 'm', 'i', 'n', '-', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd'});
             ctx.connectController();
             for (CliCommand cliCommand : cliCommands) {
                 String command = cliCommand.getCommand();
