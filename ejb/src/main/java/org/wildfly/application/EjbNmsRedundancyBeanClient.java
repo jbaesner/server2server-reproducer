@@ -24,6 +24,8 @@ import javax.ejb.Startup;
 import javax.ejb.Timeout;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -32,9 +34,9 @@ import org.jboss.logging.Logger;
 
 @Startup
 @Singleton
-public class RedundancyNmsService {
+public class EjbNmsRedundancyBeanClient {
 
-    private final Logger logger = Logger.getLogger(RedundancyNmsService.class);
+    private final Logger logger = Logger.getLogger(EjbNmsRedundancyBeanClient.class);
 
     private static final long SLEEP_TIME = Long.parseLong(System.getProperty("sleep.time", "30000")); // default 30sec
     private static final String JBOSS_NODE_NAME = System.getProperty("jboss.node.name");
@@ -50,6 +52,10 @@ public class RedundancyNmsService {
 
     @Resource
     TimerService timerSvc;
+
+    // to check for transactions
+    //@Resource(lookup="java:comp/TransactionSynchronizationRegistry")
+    // TransactionSynchronizationRegistry tsr;
 
     @PostConstruct
     public void setup() {
@@ -84,8 +90,10 @@ public class RedundancyNmsService {
     }
 
     @Timeout
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public void timeout() {
 
+        logger.infof("timer expired: calling ping from '%s'", JBOSS_NODE_NAME);
         String jbossNodeName = bean.ping(JBOSS_NODE_NAME);
         logger.infof("got answer on ping from '%s'", jbossNodeName);
 

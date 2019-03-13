@@ -123,6 +123,9 @@
             <logger category="sun.rmi">
                 <level name="WARN"/>
             </logger>
+            <logger category="org.jboss.as.ejb3.invocation">
+                <level name="TRACE"/>
+            </logger>
             <logger category="org.jboss.ejb.client">
                 <level name="TRACE"/>
             </logger>
@@ -223,7 +226,8 @@
                     <file-data-store name="default-file-store" path="timer-service-data" relative-to="jboss.server.data.dir"/>
                 </data-stores>
             </timer-service>
-            <remote connector-ref="http-remoting-connector" thread-pool-name="default">
+            <!-- use the remoting connector -->
+            <remote connector-ref="remoting-connector" thread-pool-name="default">
                 <channel-creation-options>
                     <option name="READ_TIMEOUT" value="${prop.remoting-connector.read.timeout:20}" type="xnio"/>
                     <option name="MAX_OUTBOUND_MESSAGES" value="1234" type="remoting"/>
@@ -600,7 +604,7 @@
         <socket-binding name="jgroups-udp" interface="private" port="55200" multicast-address="${jboss.default.multicast.address:230.0.0.4}" multicast-port="45688"/>
         <socket-binding name="modcluster" multicast-address="${jboss.modcluster.multicast.address:224.0.1.105}" multicast-port="23364"/>
         <socket-binding name="remoting" port="4447">
-            <client-mapping destination-address="localhost" destination-port="4447"/>
+            <client-mapping destination-address="${client.mapping.bind.address}" destination-port="${client.mapping.bind.port}"/>
         </socket-binding>
         <outbound-socket-binding name="mail-smtp">
             <remote-destination host="localhost" port="25"/>

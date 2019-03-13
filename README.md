@@ -14,8 +14,14 @@
 
     $JBOSS_HOME/bin/add-user.sh -m -u admin -p admin-password
 
-5.) Build the project and copy the deployable:
+5.) Build the project and copy the deployable - either 5.1.) or 5.2.) :
 
+5.1.) running the server2server communication only (without HS singleton service)
+
+    $PROJECT_ROOT/ear/target/server2server.ear $JBOSS_HOME/standalone/deployments
+
+5.2.) running the server2server communication triggered by a CLI deployment started from HA singleton service (NOT WORKING YET)
+       
     $PROJECT_ROOT/ear/target/server2server.ear $JBOSS_HOME/standalone/singleton-deployments
     $PROJECT_ROOT/haservice/target/server2server-haservice.jar $JBOSS_HOME/standalone/deployments
     
@@ -26,5 +32,5 @@
     
 7.) start two nodes
 
-    $JBOSS_HOME/bin/standalone.sh -c standalone-ha.xml -Djboss.node.name=node1 -Djboss.server.base.dir=$JBOSS_HOME/node1 -Droc.port=4747 -Dremote.distinct.name=node2
-    $JBOSS_HOME/bin/standalone.sh -c standalone-ha.xml -Djboss.node.name=node2 -Djboss.server.base.dir=$JBOSS_HOME/node2 -Djboss.socket.binding.port-offset=300 -Droc.port=4447 -Dremote.distinct.name=node1
+    $JBOSS_HOME/bin/standalone.sh -c standalone-ha.xml -Djboss.node.name=node1 -Djboss.server.base.dir=$JBOSS_HOME/node1 -Droc.port=4747 -Dremote.distinct.name=node2 -Dclient.mapping.bind.address=127.0.0.1 -Dclient.mapping.bind.port=4447
+    $JBOSS_HOME/bin/standalone.sh -c standalone-ha.xml -Djboss.node.name=node2 -Djboss.server.base.dir=$JBOSS_HOME/node2 -Djboss.socket.binding.port-offset=300 -Droc.port=4447 -Dremote.distinct.name=node1 -Dclient.mapping.bind.address=127.0.0.1 -Dclient.mapping.bind.port=4747
