@@ -48,35 +48,37 @@ public class EjbNmsRedundancyBeanClient {
     String distinctName = System.getProperty("remote.distinct.name", "");
     String jndiName = String.format(EJB_JNDI_NAME_TEMPLATE, distinctName);
 
-    EjbNmsRedundancy bean;
-
     @Resource
     TimerService timerSvc;
 
-    // to check for transactions
-    //@Resource(lookup="java:comp/TransactionSynchronizationRegistry")
-    // TransactionSynchronizationRegistry tsr;
-
     @PostConstruct
     public void setup() {
-
         // setup a timer configuration
         TimerConfig timerConfig = new TimerConfig("repeating-timer", false);
         timerSvc.createIntervalTimer(1000l, SLEEP_TIME, timerConfig);
+    }
 
-        // lookup the EjbNmsRedundancyBean
+    @Timeout
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public void timeout() {
+
+        logger.infof("timer expired: calling ping from '%s'", JBOSS_NODE_NAME);
+
         Context ctx = null;
+
         try {
             Properties props = new Properties();
             props.put(Context.INITIAL_CONTEXT_FACTORY, "org.wildfly.naming.client.WildFlyInitialContextFactory");
             ctx = new InitialContext(props);
 
-            logger.debugf("used jndiName '%s'", jndiName);
-            
-            bean = (EjbNmsRedundancy) ctx.lookup(jndiName);
+            EjbNmsRedundancy bean = (EjbNmsRedundancy) ctx.lookup(jndiName);
+
+            String jbossNodeName = bean.ping(JBOSS_NODE_NAME);
+
+            logger.infof("got answer on ping from '%s'", jbossNodeName);
 
         } catch (NamingException e) {
-            logger.error("Unable to lookup EjbNmsRedundancyBean", e);
+            logger.error("Unable to invoke EjbNmsRedundancyBean", e);
         } finally {
             if (ctx != null) {
                 try {
@@ -87,40 +89,5 @@ public class EjbNmsRedundancyBeanClient {
                 ctx = null;
             }
         }
-    }
-
-    @Timeout
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public void timeout() {
-
-        logger.infof("timer expired: calling ping from '%s'", JBOSS_NODE_NAME);
-        String jbossNodeName = bean.ping(JBOSS_NODE_NAME);
-        logger.infof("got answer on ping from '%s'", jbossNodeName);
-
-//        Context ctx = null;
-//
-//        try {
-//            Properties props = new Properties();
-//            props.put(Context.INITIAL_CONTEXT_FACTORY, "org.wildfly.application.naming.client.WildFlyInitialContextFactory");
-//            ctx = new InitialContext(props);
-//
-//            EjbNmsRedundancy bean = (EjbNmsRedundancy) ctx.lookup(jndiName);
-//
-//            String jbossNodeName = bean.ping(JBOSS_NODE_NAME);
-//
-//            logger.infof("got answer on ping from '%s'", jbossNodeName);
-//
-//        } catch (NamingException e) {
-//            logger.error("Unable to invoke EjbNmsRedundancyBean", e);
-//        } finally {
-//            if (ctx != null) {
-//                try {
-//                    ctx.close();
-//                } catch (NamingException e) {
-//                    logger.trace("Unable to close Context", e);
-//                }
-//                ctx = null;
-//            }
-//        }
     }
 }
