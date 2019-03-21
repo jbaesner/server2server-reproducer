@@ -1,10 +1,10 @@
 # wildfly-server2server
 
-1.) Install a fresh JBoss EAP 7.2.0
+1.) Install a fresh JBoss EAP 7.1.4
 
 2.) copy the server configuration
 
-    cp $PROJECT_ROOT/config/standalone-ha-720.xml $JBOSS_HOME/standalone/configuration/standalone-ha.xml
+    cp $PROJECT_ROOT/config/standalone-ha-714.xml $JBOSS_HOME/standalone/configuration/standalone-ha.xml
      
 3.) Add a user 'remote-user' with password 'remote-password' to the server ApplicationRealm
 

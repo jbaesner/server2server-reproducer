@@ -118,6 +118,9 @@
             <logger category="sun.rmi">
                 <level name="WARN"/>
             </logger>
+            <logger category="org.jboss.as.ejb3.invocation">
+                <level name="TRACE"/>
+            </logger>
             <logger category="org.jboss.ejb.client">
                 <level name="TRACE"/>
             </logger>
@@ -216,7 +219,7 @@
                     <file-data-store name="default-file-store" path="timer-service-data" relative-to="jboss.server.data.dir"/>
                 </data-stores>
             </timer-service>
-            <remote connector-ref="http-remoting-connector" thread-pool-name="default">
+            <remote connector-ref="remoting-connector" thread-pool-name="default">
                 <channel-creation-options>
                     <option name="READ_TIMEOUT" value="${prop.remoting-connector.read.timeout:20}" type="xnio"/>
                     <option name="MAX_OUTBOUND_MESSAGES" value="1234" type="remoting"/>
@@ -235,13 +238,13 @@
         </subsystem>
         <subsystem xmlns="urn:wildfly:elytron:1.2" default-authentication-context="default" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
             <authentication-client>
-                <authentication-configuration name="ejb-auth" authentication-name="remote-user">
-                    <credential-reference clear-text="remote-password"/>
+                <authentication-configuration name="ejb-auth" authentication-name="admin">
+                    <credential-reference clear-text="admin-password"/>
                 </authentication-configuration>
                 <authentication-context name="default">
                     <match-rule authentication-configuration="ejb-auth"/>
                 </authentication-context>
-            </authentication-client>        
+            </authentication-client>
             <providers>
                 <aggregate-providers name="combined-providers">
                     <providers name="elytron"/>
@@ -471,7 +474,7 @@
             <connector name="remoting-connector" socket-binding="remoting" security-realm="ApplicationRealm">
 	            <properties>
                     <property name="SSL_ENABLED" value="false"/>
-                </properties>            
+                </properties>
             </connector>
             <http-connector name="http-remoting-connector" connector-ref="default" security-realm="ApplicationRealm"/>
             <outbound-connections>
@@ -523,7 +526,9 @@
         <subsystem xmlns="urn:jboss:domain:singleton:1.0">
             <singleton-policies default="default">
                 <singleton-policy name="default" cache-container="server">
-                    <simple-election-policy/>
+                    <simple-election-policy>
+                        <name-preferences>node2 node1</name-preferences>
+                    </simple-election-policy>
                 </singleton-policy>
             </singleton-policies>
         </subsystem>
@@ -596,7 +601,9 @@
         <socket-binding name="modcluster" port="0" multicast-address="${jboss.modcluster.multicast.address:224.0.1.105}" multicast-port="23364"/>
         <socket-binding name="txn-recovery-environment" port="4712"/>
         <socket-binding name="txn-status-manager" port="4713"/>
-        <socket-binding name="remoting" port="4447"/>
+        <socket-binding name="remoting" port="4447">
+            <client-mapping destination-address="${client.mapping.bind.address}" destination-port="${client.mapping.bind.port}"/>
+        </socket-binding>
         <outbound-socket-binding name="mail-smtp">
             <remote-destination host="localhost" port="25"/>
         </outbound-socket-binding>
